@@ -1,7 +1,7 @@
 import './App.css';
 
-import Board from './components/Board.js'
+import Game from './components/Game.js'
 
 export default function App() {
-  return <Board/>;
+  return <Game/>;
 }
