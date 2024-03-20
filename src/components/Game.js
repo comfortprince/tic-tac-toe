@@ -7,6 +7,7 @@ export default function App() {
 	const [currentMove, setCurrentMove] = useState(0)
 	const xIsNext = currentMove % 2 === 0
 	const currentSquares = history[currentMove];
+	const [sortAscending, setSortAscending] = useState(true)
 
 	function handlePlay(nextSquares) {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
@@ -48,16 +49,23 @@ export default function App() {
 		);
 	});
 
+	const sortedMoves = sortAscending ? moves : moves.reverse()
+
 	return (
 		<div className="game">
 			<div className="game-board">
 				<Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
 			</div>
 			<div className="game-info">
+				<div>
+					<input type="checkbox" onClick={() => { setSortAscending(!sortAscending) }} />
+					<span> { sortAscending ? 'ascending' : 'descending' } </span>
+				</div>
+
 				<ol>
-					{moves}
+					{sortedMoves}
 				</ol>
 			</div>
 		</div>
-);
+	);
 }
