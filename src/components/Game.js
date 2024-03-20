@@ -18,7 +18,22 @@ export default function App() {
 		setCurrentMove(nextMove)
 	}
 
-	const moves = history.map((squares, move) => {
+	const moves = history.map((squares, move, moves) => {
+		if(move === (moves.length - 1)){
+			return (
+				<li key={move} >
+					<span 
+						style={{
+							fontSize: 'small',
+							fontWeight: '600'
+						}}
+					> 
+						You are at move #{move} 
+					</span>
+				</li>	
+			)
+		}
+
 		let description;
 		if (move > 0) {
 			description = 'Go to move #' + move;
