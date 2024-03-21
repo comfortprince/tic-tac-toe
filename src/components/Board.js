@@ -1,7 +1,7 @@
 import Square from './Square.js'
 
 export default function Board({xIsNext, squares, onPlay}) {
-	function handleClick(i) {
+	function handleClick(i, currentMoveLocation) {
 		const nextSquares = squares.slice()
 
 		if(nextSquares[i] || calculateGameStatus(squares).winner) return
@@ -12,7 +12,7 @@ export default function Board({xIsNext, squares, onPlay}) {
 			nextSquares[i] = 'O'
 		}
 
-		onPlay(nextSquares)
+		onPlay(nextSquares, currentMoveLocation)
 	}
 
 	const gameStatus = calculateGameStatus(squares)
@@ -48,7 +48,7 @@ function generateRowsOfSquares(rowsOfSquares, squares, gameStatus, handleClick) 
 				key={i}
 				value={squares[i]}
 				highlight={gameStatus.status === gameStatus.WINNER && gameStatus.winningLine.includes(i)}
-				onSquareClick={() => handleClick(i)}
+				onSquareClick={() => handleClick(i, {row: Math.floor(i/3), col: i%3})}
 			/>
 		rowsOfSquares[Math.floor(i/3)][i%3] = square
 	}

@@ -8,11 +8,14 @@ export default function App() {
 	const xIsNext = currentMove % 2 === 0
 	const currentSquares = history[currentMove];
 	const [sortAscending, setSortAscending] = useState(true)
+	const [locations, setLocations] = useState([])
 
-	function handlePlay(nextSquares) {
+	function handlePlay(nextSquares, currentMoveLocation) {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
 		setHistory(nextHistory)
 		setCurrentMove(nextHistory.length - 1)
+		const nextLocations = [...locations, currentMoveLocation]
+		setLocations(nextLocations)
 	}
 
 	function jumpTo(nextMove) {
@@ -20,6 +23,14 @@ export default function App() {
 	}
 
 	const moves = history.map((squares, move, moves) => {
+		let locationStr = ''
+
+		if(move !== 0){
+			const location = locations[move-1]
+			locationStr = `(${location.row},${location.col})`
+		}
+		
+
 		if(move === (moves.length - 1)){
 			return (
 				<li key={move} >
@@ -29,7 +40,7 @@ export default function App() {
 							fontWeight: '600'
 						}}
 					> 
-						You are at move #{move} 
+						You are at move #{move} {locationStr}
 					</span>
 				</li>	
 			)
@@ -37,7 +48,7 @@ export default function App() {
 
 		let description;
 		if (move > 0) {
-			description = 'Go to move #' + move;
+			description = 'Go to move #' + move + ` ${locationStr}`;
 		} else {
 			description = 'Go to game start';
 		}
