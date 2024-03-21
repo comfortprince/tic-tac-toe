@@ -16,7 +16,7 @@ export default function Board({xIsNext, squares, onPlay}) {
 	}
 
 	const gameStatus = calculateGameStatus(squares)
-	let status = setStatusDesc(gameStatus.winner, xIsNext)
+	let status = setStatusDesc(gameStatus, xIsNext)
 
 	const rowsOfSquares = [[], [], []]
 	generateRowsOfSquares(rowsOfSquares, squares, gameStatus, handleClick)
@@ -54,10 +54,12 @@ function generateRowsOfSquares(rowsOfSquares, squares, gameStatus, handleClick) 
 	}
 }
 
-function setStatusDesc(winner, xIsNext) {
+function setStatusDesc(gameStatus, xIsNext) {
 	let status
-	if (winner) {
-		status = "Winner: " + winner;
+	if (gameStatus.status === gameStatus.WINNER) {
+		status = "Winner: " + gameStatus.winner;
+	} else if (gameStatus.status === gameStatus.DRAW) {
+		status = "Game Over! Draw. Try Again."
 	} else {
 		status = "Next player: " + (xIsNext ? "X" : "O");
 	}
