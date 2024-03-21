@@ -4,7 +4,7 @@ export default function Board({xIsNext, squares, onPlay}) {
 	function handleClick(i) {
 		const nextSquares = squares.slice()
 
-		if(nextSquares[i] || calculateWinner(squares)) return
+		if(nextSquares[i] || calculateGameStatus(squares).winner) return
 
 		if(xIsNext){
 			nextSquares[i] = 'X'
@@ -15,26 +15,14 @@ export default function Board({xIsNext, squares, onPlay}) {
 		onPlay(nextSquares)
 	}
 
-	const winner = calculateWinner(squares)
-	let status
+	const gameStatus = calculateGameStatus(squares)
+	let status = setStatusDesc(gameStatus.winner, xIsNext)
 
-	if (winner) {
-		status = "Winner: " + winner;
-	} else {
-		status = "Next player: " + (xIsNext ? "X" : "O");
-	}
-
-	const rowsOfSquares = 	[[], [], []]
-	for (let i = 0; i < squares.length; i++)
-		rowsOfSquares[Math.floor(i/3)][i%3] = <Square key={i%3} value={squares[i]} onSquareClick={() => handleClick(i)} />
+	const rowsOfSquares = [[], [], []]
+	generateRowsOfSquares(rowsOfSquares, squares, gameStatus, handleClick)
 
 	const boardRows = []
-	for(let i = 0; i !== 3; ++i)
-		boardRows.push(
-			<div key={i} className="board-row">
-				{rowsOfSquares[i]}
-			</div>
-		)
+	generateBoardRows(boardRows, rowsOfSquares)
 
 	return (
 		<>
@@ -44,7 +32,48 @@ export default function Board({xIsNext, squares, onPlay}) {
 	);
 }
 
-function calculateWinner(squares) {
+function generateBoardRows(boardRows, rowsOfSquares) {
+	for(let i = 0; i !== 3; ++i)
+		boardRows.push(
+			<div key={i} className="board-row">
+				{rowsOfSquares[i]}
+			</div>
+		)
+}
+
+function generateRowsOfSquares(rowsOfSquares, squares, gameStatus, handleClick) {
+	for (let i = 0; i < squares.length; i++){
+		const square =
+			<Square
+				key={i}
+				value={squares[i]}
+				highlight={gameStatus.status === gameStatus.WINNER && gameStatus.winningLine.includes(i)}
+				onSquareClick={() => handleClick(i)}
+			/>
+		rowsOfSquares[Math.floor(i/3)][i%3] = square
+	}
+}
+
+function setStatusDesc(winner, xIsNext) {
+	let status
+	if (winner) {
+		status = "Winner: " + winner;
+	} else {
+		status = "Next player: " + (xIsNext ? "X" : "O");
+	}
+	return status
+}
+
+function calculateGameStatus(squares) {
+  const gameStatus = {
+	winner: null,
+	status: null,
+	winningLine: null,
+	WINNER: 'WINNER',
+	ONGOING: 'ONGOING',
+	DRAW: 'DRAW'
+  }
+
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -59,10 +88,20 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      gameStatus.winner = squares[a]
+      gameStatus.status = gameStatus.WINNER
+      gameStatus.winningLine = lines[i]
+      return gameStatus;
     }
   }
-  return null;
+  
+  if(!squares.includes(null)){
+    gameStatus.status = gameStatus.DRAW
+    return gameStatus
+  }
+
+  gameStatus.status = gameStatus.ONGOING
+  return gameStatus
 }
 
 
